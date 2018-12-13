@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Text to Soeech API"
+        android:text="Text to Speech API"
         android:layout_marginBottom="100dp"
         />
 
@@ -55,5 +55,13 @@
         android:id="@+id/tv"
         android:layout_width="match_parent"
         android:layout_height="100dp" />
+
+    <Button
+        android:id="@+id/sound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Play sound"
+        />
 
 </LinearLayout>

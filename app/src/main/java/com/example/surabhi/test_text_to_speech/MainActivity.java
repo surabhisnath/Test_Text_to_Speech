@@ -2,10 +2,14 @@ package com.example.surabhi.test_text_to_speech;
 import com.example.surabhi.test_text_to_speech.AndroidMultiPartEntity.ProgressListener;
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.SynthesizeOptions;
-import com.ibm.watson.developer_cloud.text_to_speech.v1.util.WaveUtils;
+import com.ibm.watson.developer_cloud.text_to_speech.v1.util.*;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
+
+import android.media.MediaPlayer;
+import android.content.res.*;
 import android.os.AsyncTask;
 //import android.speech.tts.TextToSpeech;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,6 +44,10 @@ public class MainActivity extends AppCompatActivity
     private EditText emai;
     private Button ap;
     private TextView t;
+    private Button playsound;
+
+    private MediaPlayer phw;
+
 
     String API_KEY = "SiU6DYyfpsrgkdu0R1lOT6qfru1nzhBP";
     String API_URL = "https://api.fullcontact.com/v2/person.json?";
@@ -48,17 +56,19 @@ public class MainActivity extends AppCompatActivity
     String key = "EIHu-SwxCGE4pW707R2t1yJEfMpadC7e3k-rTKTUUGZV";
     String url = "https://gateway-syd.watsonplatform.net/text-to-speech/api";
 
-//    @Override
-//    protected void onDestroy()
-//    {
-//
+    @Override
+    protected void onDestroy()
+    {
+        if(phw != null)
+            phw.release();
+
 //        if(TTS!=null)
 //        {
 //            TTS.stop();
 //            TTS.shutdown();
 //        }
-//        super.onDestroy();
-//    }
+        super.onDestroy();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -66,12 +76,18 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        phw = MediaPlayer.create(this, R.raw.test_next);
+
+
         in = (EditText) findViewById(R.id.inp);
         call = (Button) findViewById(R.id.tts);
         callapi = (Button)findViewById(R.id.ttsapi);
         emai = (EditText) findViewById(R.id.em);
         ap = (Button) findViewById(R.id.api);
         t = (TextView) findViewById(R.id.tv);
+        playsound = (Button)findViewById(R.id.sound);
+
 
 
 //        TTS = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -121,6 +137,19 @@ public class MainActivity extends AppCompatActivity
                 new taskclass().execute();
             }
         });
+
+
+
+
+        playsound.setOnClickListener(new View.OnClickListener()
+        {
+
+            @Override
+            public void onClick(View view)
+            {
+                phw.start();
+            }
+        });
     }
 
 
@@ -128,11 +157,12 @@ public class MainActivity extends AppCompatActivity
     {
         protected String doInBackground(Void... urls)
         {
-            String path = "/media/surabhi/Data_Backup/surabhi/handwriting/Test_Text_to_Speech/";
+            String path = "/media/surabhi/Data_Backup/surabhi/handwriting/Test_Text_to_Speech/app/src/main/res/raw/";
             System.out.println("PATH IS: "+path);
 
+            System.out.println(Environment.getExternalStorageDirectory().getAbsolutePath());
             File mFolder = new File(getFilesDir() + "/sample");
-            File imgFile = new File(mFolder.getAbsolutePath() + "/hello_world.wav");
+            File imgFile = new File(mFolder.getAbsolutePath() + "/random_text.mp3");
 
             System.out.println(getFilesDir());
             System.out.println(mFolder.getAbsolutePath());
@@ -168,11 +198,11 @@ public class MainActivity extends AppCompatActivity
             try
             {
                 System.out.println("STAGE 3");
-                String loc = path + "hello_world.wav";
+                String loc = path + "random_text.mp3";
 
                 System.out.println("STAGE 3.5");
 
-                OutputStream out = new FileOutputStream(imgFile);
+                OutputStream out = new FileOutputStream(path +"random_text.mp3");
                 byte[] buffer = new byte[1024];
                 int length;
 
@@ -180,14 +210,17 @@ public class MainActivity extends AppCompatActivity
 
                 SynthesizeOptions synthesizeOptions =
                         new SynthesizeOptions.Builder()
-                                .text("hello world")
-                                .accept("audio/wav")
+                                .text("random text")
+                                .accept("audio/mp3")
                                 .voice("en-US_AllisonVoice")
                                 .build();
 
                 System.out.println("before synthesize");
                 InputStream inputStream = textToSpeech.synthesize(synthesizeOptions).execute();
                 System.out.println("after synthesize");
+
+
+
                 InputStream in = WaveUtils.reWriteWaveHeader(inputStream);
 
                 System.out.println("Before while");
@@ -205,6 +238,9 @@ public class MainActivity extends AppCompatActivity
                 in.close();
                 inputStream.close();
                 System.out.println("done");
+
+
+
             }
 
             catch (IOException e)
